@@ -18,19 +18,19 @@ tasks = [
   { description = "Do networking stuff", done = False }]
 
 -- UPDATE
-type Action = AddTask Task | DoneTask Task
+type Action = AddTask Task | RemoveTask Task
 
 update : Action -> List Task -> List Task
 update action current_tasks =
   case action of
     AddTask task -> current_tasks ++ [task]
-    DoneTask task -> List.filter (\task_fromlist -> task /= task_fromlist) current_tasks
+    RemoveTask task -> List.filter (\task_fromlist -> task /= task_fromlist) current_tasks
 
 -- VIEW
 
 renderTask : Task -> Html Action
 renderTask task = 
-  button [onClick (DoneTask task), disabled task.done] [ text task.description ]
+  button [onClick (RemoveTask task), disabled task.done] [ text task.description ]
       
 view : List Task -> Html Action
 view current_tasks =
