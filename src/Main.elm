@@ -26,11 +26,11 @@ update action current_tasks =
     AddTask task -> current_tasks ++ [task]
     DoneTask task -> List.filter (\task_fromlist -> task /= task_fromlist) current_tasks
 
+-- VIEW
+
 renderTask : Task -> Html Action
 renderTask task = 
   button [onClick (DoneTask task), disabled task.done] [ text task.description ]
-
--- VIEW
       
 view : List Task -> Html Action
 view current_tasks =
