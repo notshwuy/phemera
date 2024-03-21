@@ -8,7 +8,7 @@ import Html.Attributes exposing (value, type_)
 
 -- MODEL
 type alias Task = { description: String }
-type alias ApplicationState = { tasks: List Task, carry: Task }
+type alias ApplicationState = { tasks: List Task, draft: Task }
 
 empty_task_list : List Task
 empty_task_list = []
@@ -37,12 +37,14 @@ update action appState =
       { appState | tasks = List.filter (\fromlist -> task /= fromlist) appState.tasks }
             
     FormAction (ChangeDescription description) ->
-      { appState | carry = { description = description }}
+      { appState | draft = { description = description }}
         
     FormAction Submit -> 
-      case validate_task(appState.carry) of
-        Ok task -> { appState | tasks = appState.tasks ++ [task], carry = empty_task }
+      case validate_task(appState.draft) of
+        Ok task -> { appState | tasks = appState.tasks ++ [task], draft = empty_task }
         Err _ -> appState
+
+-- SUBSCRIPTIONS
 
 -- VIEW
 render_task : Task -> Html Action
@@ -57,7 +59,7 @@ view appState =
       input [
         type_ "text",
         onInput (\value -> FormAction (ChangeDescription value)),
-        value appState.carry.description
+        value appState.draft.description
       ] [],
       button [onClick (FormAction Submit)] [ text "Add Task" ]
     ]
