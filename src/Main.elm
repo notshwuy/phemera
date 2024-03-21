@@ -7,13 +7,9 @@ import Html exposing (button)
 
 import Html.Events exposing (onClick)
 import Html exposing (input)
-import Html.Events exposing (onInput)
-import Html.Events exposing (onSubmit)
-import Html exposing (form)
-import Html.Attributes exposing (value)
-import Html.Attributes exposing (type_)
-import Html exposing (ul)
-import Html exposing (li)
+import Html exposing (Html, div, text, button, input, form, ul, li)
+import Html.Events exposing (onClick, onInput, onSubmit)
+import Html.Attributes exposing (value, type_)
 
 -- MODEL
 type alias Task = { description: String }
@@ -68,7 +64,8 @@ view appState =
         type_ "text",
         onInput (\value -> FormAction (ChangeDescription value)),
         value appState.carry.description
-      ] []
+      ] [],
+      button [onClick (FormAction Submit)] [ text "Add Task" ]
     ]
   ]
 
