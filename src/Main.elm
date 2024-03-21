@@ -1,39 +1,76 @@
 module Main exposing (..)
 
 import Browser
+
 import Html exposing (Html, div, text)
 import Html exposing (button)
-import Html.Events exposing (onClick)
-import Html.Attributes exposing (disabled)
 
-main : Program () (List Task) Action
-main = Browser.sandbox { init = tasks, update = update, view = view }
+import Html.Events exposing (onClick)
+import Html exposing (input)
+import Html.Events exposing (onInput)
+import Html.Events exposing (onSubmit)
+import Html exposing (form)
+import Html.Attributes exposing (value)
+import Html.Attributes exposing (type_)
 
 -- MODEL
-type alias Task = { description: String, done: Bool }
+type alias Task = { description: String }
+type alias ApplicationState = { tasks: List Task, carry: Task }
 
-tasks : List Task
-tasks = [
-  { description = "Learn Elm", done = False }, 
-  { description = "Do networking stuff", done = False }]
+emptyTaskList : List Task
+emptyTaskList = []
+
+emptyTask : Task
+emptyTask = Task ""
+
+state : ApplicationState
+state = ApplicationState emptyTaskList emptyTask
 
 -- UPDATE
-type Action = AddTask Task | RemoveTask Task
+type TaskFormAction = ChangeDescription String | Submit
+type Action = RemoveTask Task | FormAction TaskFormAction
 
-update : Action -> List Task -> List Task
-update action current_tasks =
+-- Parse, don't validate (https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/)
+validate_task : Task -> Result () Task
+validate_task task = 
+  if not (List.any (\validation -> validation == False) [String.length(task.description) > 0])
+    then Ok task
+    else Err ()
+
+update : Action -> ApplicationState -> ApplicationState
+update action appState =
   case action of
-    AddTask task -> current_tasks ++ [task]
-    RemoveTask task -> List.filter (\task_fromlist -> task /= task_fromlist) current_tasks
+    RemoveTask task -> 
+      { appState | tasks = List.filter (\fromlist -> task /= fromlist) appState.tasks }
+            
+    FormAction (ChangeDescription description) ->
+      { appState | carry = { description = description }}
+        
+    FormAction Submit -> 
+      case validate_task(appState.carry) of
+        Ok task -> { appState | tasks = appState.tasks ++ [task], carry = emptyTask }
+        Err _ -> appState
 
 -- VIEW
-
 renderTask : Task -> Html Action
 renderTask task = 
-  button [onClick (RemoveTask task), disabled task.done] [ text task.description ]
-      
-view : List Task -> Html Action
-view current_tasks =
+  button [onClick (RemoveTask task)] [ text task.description ]
+
+view : ApplicationState -> Html Action
+view appState =
   div []
-    (List.map (\x -> renderTask x) current_tasks)
+  [
+    div [] (List.map (\task -> renderTask task) appState.tasks),
+    form [onSubmit (FormAction Submit)] [
+      input [
+        type_ "text",
+        onInput (\value -> FormAction (ChangeDescription value)),
+        value appState.carry.description
+      ] []
+    ]
+  ]
+
+-- MAIN
     
+main : Program () (ApplicationState) Action
+main = Browser.sandbox { init = state, update = update, view = view }
