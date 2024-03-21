@@ -12,6 +12,8 @@ import Html.Events exposing (onSubmit)
 import Html exposing (form)
 import Html.Attributes exposing (value)
 import Html.Attributes exposing (type_)
+import Html exposing (ul)
+import Html exposing (li)
 
 -- MODEL
 type alias Task = { description: String }
@@ -60,7 +62,7 @@ view : ApplicationState -> Html Action
 view appState =
   div []
   [
-    div [] (List.map (\task -> renderTask task) appState.tasks),
+    ul [] (List.map (\task -> li [] [renderTask task]) appState.tasks),
     form [onSubmit (FormAction Submit)] [
       input [
         type_ "text",
