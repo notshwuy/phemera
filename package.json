@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "elm make src/Main.elm -o public/index.html"
+  },
+  "dependencies": {
+    "elm": "^0.19.1-6"
+  }
+}
