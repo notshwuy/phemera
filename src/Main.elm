@@ -10,14 +10,14 @@ import Html.Attributes exposing (value, type_)
 type alias Task = { description: String }
 type alias ApplicationState = { tasks: List Task, carry: Task }
 
-emptyTaskList : List Task
-emptyTaskList = []
+empty_task_list : List Task
+empty_task_list = []
 
-emptyTask : Task
-emptyTask = Task ""
+empty_task : Task
+empty_task = Task ""
 
 state : ApplicationState
-state = ApplicationState emptyTaskList emptyTask
+state = ApplicationState empty_task_list empty_task
 
 -- UPDATE
 type TaskFormAction = ChangeDescription String | Submit
@@ -41,19 +41,18 @@ update action appState =
         
     FormAction Submit -> 
       case validate_task(appState.carry) of
-        Ok task -> { appState | tasks = appState.tasks ++ [task], carry = emptyTask }
+        Ok task -> { appState | tasks = appState.tasks ++ [task], carry = empty_task }
         Err _ -> appState
 
 -- VIEW
-renderTask : Task -> Html Action
-renderTask task = 
+render_task : Task -> Html Action
+render_task task = 
   button [onClick (RemoveTask task)] [ text task.description ]
 
 view : ApplicationState -> Html Action
 view appState =
-  div []
-  [
-    ul [] (List.map (\task -> li [] [renderTask task]) appState.tasks),
+  div [] [
+    ul [] (List.map (\task -> li [] [render_task task]) appState.tasks),
     form [onSubmit (FormAction Submit)] [
       input [
         type_ "text",
@@ -65,6 +64,5 @@ view appState =
   ]
 
 -- MAIN
-    
 main : Program () (ApplicationState) Action
 main = Browser.sandbox { init = state, update = update, view = view }
