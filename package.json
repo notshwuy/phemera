@@ -1,7 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "build": "elm make src/Main.elm --output=public/index.html"
+    "start": "elm-live src/Main.elm --dir=public --start-page=index.html -- --debug --output=index.js",
+    "build": "elm make src/Main.elm --output=public/index.js --optimize"
   },
   "dependencies": {
     "elm": "^0.19.1-6"
